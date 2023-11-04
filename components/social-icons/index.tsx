@@ -7,7 +7,7 @@ const components = {
   youtube: Youtube,
   linkedin: Linkedin,
   twitter: Twitter,
-  mastodon: Mastodon,
+  // mastodon: Mastodon,
 }
 
 type SocialIconProps = {
