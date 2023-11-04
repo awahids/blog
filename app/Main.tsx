@@ -32,36 +32,42 @@ export default function Home({ posts }) {
                         <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                       </dd>
                     </dl>
-                    <div className="space-y-5 xl:col-span-3">
-                      <div className="space-y-6">
-                        <div>
-                          <h2 className="text-2xl font-bold leading-8 tracking-tight underline-offset-4 hover:underline">
-                            <Link
-                              href={`/blog/${slug}`}
-                              className="text-slate-600 dark:text-amber-600"
-                            >
-                              {title}
-                            </Link>
-                          </h2>
-                          <div className="flex flex-wrap">
-                            {tags.map((tag) => (
-                              <Tag key={tag} text={tag} />
-                            ))}
+                    <div className="flex transform space-y-5 rounded p-2 transition-transform hover:scale-105 hover:bg-gray-100 dark:hover:bg-gray-900 xl:col-span-3">
+                      <Link
+                        href={`/blog/${slug}`}
+                        className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                        aria-label={`Read more: "${title}"`}
+                      >
+                        <div className="space-y-6">
+                          <div>
+                            <h2 className="text-2xl font-bold leading-8 tracking-tight underline-offset-4 hover:underline">
+                              <Link
+                                href={`/blog/${slug}`}
+                                className="text-slate-600 dark:text-amber-600"
+                              >
+                                {title}
+                              </Link>
+                            </h2>
+                            <div className="flex flex-wrap">
+                              {tags.map((tag) => (
+                                <Tag key={tag} text={tag} />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="prose max-w-none text-gray-500 dark:text-gray-400">
+                            {summary}
                           </div>
                         </div>
-                        <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-                          {summary}
-                        </div>
-                      </div>
-                      <div className="text-base font-medium leading-6">
-                        <Link
-                          href={`/blog/${slug}`}
-                          className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-                          aria-label={`Read more: "${title}"`}
-                        >
-                          Read more &rarr;
-                        </Link>
-                      </div>
+                        {/* <div className="text-base font-medium leading-6">
+                          <Link
+                            href={`/blog/${slug}`}
+                            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                            aria-label={`Read more: "${title}"`}
+                          >
+                            Read more &rarr;
+                          </Link>
+                        </div> */}
+                      </Link>
                     </div>
                   </div>
                 </article>
