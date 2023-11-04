@@ -2,7 +2,9 @@
 const siteMetadata = {
   title: '~./Code8Bit',
   author: 'AW',
-  headerTitle: '> ~/Code8Bit _',
+  headerTitle: '> ~/Code8Bit',
+  blogPath: '/blog',
+  tagsPath: '/tags',
   description: 'Blogs and Tutorials',
   language: 'en-us',
   theme: 'dark', // system, dark or light

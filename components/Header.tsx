@@ -18,6 +18,7 @@ const Header = () => {
             {typeof siteMetadata.headerTitle === 'string' ? (
               <div className="hidden h-6 text-2xl font-semibold sm:block">
                 {siteMetadata.headerTitle}
+                <span className="animate-ping text-amber-500"> _</span>
               </div>
             ) : (
               siteMetadata.headerTitle
@@ -38,7 +39,7 @@ const Header = () => {
             </Link>
           ))}
         <SearchButton />
-        <ThemeSwitch />
+        {/* <ThemeSwitch /> */}
         <MobileNav />
       </div>
     </header>
