@@ -40,6 +40,10 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
         <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
           <header className="pt-6 xl:pb-6">
             <div className="space-y-1 text-center">
+              <div>
+                <PageTitle>{title}</PageTitle>
+              </div>
+              <br />
               <dl className="space-y-10">
                 <div>
                   <dt className="sr-only">Published on</dt>
@@ -50,9 +54,6 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                   </dd>
                 </div>
               </dl>
-              <div>
-                <PageTitle>{title}</PageTitle>
-              </div>
             </div>
           </header>
           <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 dark:divide-gray-700 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0">
@@ -79,7 +80,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                           {author.twitter && (
                             <Link
                               href={author.twitter}
-                              className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                              className="text-blue-600 dark:text-sky-500 hover:text-zinc-900 hover:underline underline-offset-4 hover:decoration-wavy dark:hover:text-sky-800"
                             >
                               {author.twitter.replace('https://twitter.com/', '@')}
                             </Link>
@@ -114,7 +115,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                 {tags && (
                   <div className="py-4 xl:py-8">
                     <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      Tags
+                      {tags.length > 1 ? 'Tags' : 'Tag'}
                     </h2>
                     <div className="flex flex-wrap">
                       {tags.map((tag) => (
@@ -130,7 +131,8 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                         <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                           Previous Article
                         </h2>
-                        <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
+
+                        <div className="text-gray-900 dark:text-amber-600 hover:underline underline-offset-4">
                           <Link href={`/${prev.path}`}>{prev.title}</Link>
                         </div>
                       </div>
@@ -140,7 +142,8 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                         <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                           Next Article
                         </h2>
-                        <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
+
+                        <div className="text-gray-900 dark:text-amber-600 hover:underline underline-offset-4">
                           <Link href={`/${next.path}`}>{next.title}</Link>
                         </div>
                       </div>
