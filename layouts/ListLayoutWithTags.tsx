@@ -87,7 +87,9 @@ export default function ListLayoutWithTags({
           <div className="hidden h-full max-h-screen min-w-[280px] max-w-[280px] flex-wrap overflow-auto rounded bg-gray-50 pt-5 shadow-md dark:bg-gray-900/70 dark:shadow-gray-800/40 sm:flex">
             <div className="px-6 py-4">
               {pathname.startsWith('/blog') ? (
-                <h3 className="font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">All Posts</h3>
+                <h3 className="font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  All Posts
+                </h3>
               ) : (
                 <Link
                   href={`/blog`}
@@ -107,7 +109,7 @@ export default function ListLayoutWithTags({
                       ) : (
                         <Link
                           href={`/tags/${slug(t)}`}
-                          className="px-3 py-2 text-sm font-bold uppercase text-blue-600 dark:text-sky-500 hover:text-zinc-900 hover:underline underline-offset-4 hover:decoration-wavy dark:hover:text-sky-800"
+                          className="px-3 py-2 text-sm font-bold uppercase text-blue-600 underline-offset-4 hover:text-zinc-900 hover:underline hover:decoration-wavy dark:text-sky-500 dark:hover:text-sky-800"
                           aria-label={`View posts tagged ${t}`}
                         >
                           {`${t} (${tagCounts[t]})`}
@@ -135,7 +137,10 @@ export default function ListLayoutWithTags({
                       <div className="space-y-3">
                         <div>
                           <h2 className="text-2xl font-bold leading-8 tracking-tight">
-                            <Link href={`/${path}`} className="text-gray-900 dark:text-amber-600 hover:underline underline-offset-4">
+                            <Link
+                              href={`/${path}`}
+                              className="text-gray-900 underline-offset-4 hover:underline dark:text-amber-600"
+                            >
                               {title}
                             </Link>
                           </h2>

@@ -32,7 +32,7 @@ const Header = () => {
             <Link
               key={link.title}
               href={link.href}
-              className="hidden font-medium text-gray-900 dark:text-gray-100 sm:block hover:underline underline-offset-4 hover:decoration-wavy"
+              className="hidden font-medium text-gray-900 underline-offset-4 hover:underline hover:decoration-wavy dark:text-gray-100 sm:block"
             >
               {link.title}
             </Link>

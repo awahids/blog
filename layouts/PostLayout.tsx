@@ -80,7 +80,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                           {author.twitter && (
                             <Link
                               href={author.twitter}
-                              className="text-blue-600 dark:text-sky-500 hover:text-zinc-900 hover:underline underline-offset-4 hover:decoration-wavy dark:hover:text-sky-800"
+                              className="text-blue-600 underline-offset-4 hover:text-zinc-900 hover:underline hover:decoration-wavy dark:text-sky-500 dark:hover:text-sky-800"
                             >
                               {author.twitter.replace('https://twitter.com/', '@')}
                             </Link>
@@ -132,7 +132,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                           Previous Article
                         </h2>
 
-                        <div className="text-gray-900 dark:text-amber-600 hover:underline underline-offset-4">
+                        <div className="text-gray-900 underline-offset-4 hover:underline dark:text-amber-600">
                           <Link href={`/${prev.path}`}>{prev.title}</Link>
                         </div>
                       </div>
@@ -143,7 +143,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                           Next Article
                         </h2>
 
-                        <div className="text-gray-900 dark:text-amber-600 hover:underline underline-offset-4">
+                        <div className="text-gray-900 underline-offset-4 hover:underline dark:text-amber-600">
                           <Link href={`/${next.path}`}>{next.title}</Link>
                         </div>
                       </div>
