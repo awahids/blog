@@ -17,6 +17,17 @@ export default function Home({ posts }) {
           <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
             {siteMetadata.description}
           </p>
+          {posts.length > MAX_DISPLAY && (
+            <div className="flex justify-end text-base font-medium leading-6">
+              <Link
+                href="/blog"
+                className="text-primary-500 underline-offset-4 hover:underline hover:decoration-wavy dark:hover:text-primary-200"
+                aria-label="All posts"
+              >
+                All Posts &rarr;
+              </Link>
+            </div>
+          )}
         </div>
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {!posts.length && 'No posts found.'}
@@ -76,17 +87,7 @@ export default function Home({ posts }) {
           })}
         </ul>
       </div>
-      {posts.length > MAX_DISPLAY && (
-        <div className="flex justify-end text-base font-medium leading-6">
-          <Link
-            href="/blog"
-            className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-            aria-label="All posts"
-          >
-            All Posts &rarr;
-          </Link>
-        </div>
-      )}
+
       {/* {siteMetadata.newsletter?.provider && (
         <div className="flex items-center justify-center pt-4">
           <NewsletterForm />
