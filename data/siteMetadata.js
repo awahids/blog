@@ -16,6 +16,7 @@ const siteMetadata = {
   // email: 'address@yoursite.com',
   github: 'https://github.com/awahids',
   twitter: 'https://twitter.com/awhds_',
+  instagram: 'https://instagram.com/awhds_',
   // facebook: 'https://facebook.com',
   // youtube: 'https://youtube.com',
   linkedin: 'https://www.linkedin.com/in/awahids/',
