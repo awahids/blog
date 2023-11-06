@@ -33,7 +33,7 @@ const RatingButton = ({ slug }) => {
           component={ClapButton.templates.Heart}
         /> */}
         <LikeButton
-          namespace="blog.awahids.my.id"
+          namespace="blog.awahids.my.id/blog"
           id={slug}
           component={LikeButton.templates.Heart}
           hideCounterIfLessThan={1}
