@@ -1,0 +1,110 @@
+---
+title: 'Adding API Key Middleware in NestJS'
+date: '2022-01-31'
+tags: ['nestjs', 'api-key', 'middleware']
+draft: false
+summary: 'Adding API Key Middleware in NestJS enhances security by requiring a valid API key for route access, ensuring authorized users only.'
+images: []
+---
+
+API Key Middleware is a secure way to protect your API by requiring users to include a valid API key in every request. In this guide, we'll walk through the steps to add API Key middleware to your NestJS application.
+
+## Step 1: Install NestJS
+
+Before you begin, make sure you have Node.js and NestJS installed on your computer. If not, you can install NestJS with the following command:
+
+```bash
+npm install -g @nestjs/cli
+nest new my-api
+cd my-api
+```
+
+## Step 2: Configure Environment
+
+Set up environment variables to store your API key. You can use [nestjs/config](https://github.com/nestjs/config) to manage configuration. Create a `.env` file in your project directory and add the API key:
+
+```dotenv
+API_KEY=your-api-key
+```
+
+Next, ensure you have set up the `ConfigModule` correctly in your AppModule:
+
+```jsx
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
+@Module({
+  imports: [ConfigModule.forRoot()],
+})
+export class AppModule {}
+```
+
+## Step 3: Create Middleware
+
+Create an API Key middleware named `ApiKeyMiddleware`. Create a file named `api-key.middleware.ts` in the appropriate directory in your project and add the following code:
+
+```jsx
+import { Injectable, NestMiddleware } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+@Injectable()
+export class ApiKeyMiddleware implements NestMiddleware {
+  constructor(private readonly configService: ConfigService) {}
+
+  use(req, res, next) {
+    const apiKeyHeader = req.header('api-key');
+    const apiKeyConfig = this.configService.get('API_KEY');
+
+    if (apiKeyHeader === apiKeyConfig) {
+      next(); // Continue to the next route handler if the API key is valid.
+    } else {
+      res.status(401).json({ message: 'Unauthorized' }); // Unauthorized if the API key is not valid.
+    }
+  }
+}
+```
+
+## Step 4: Register Middleware
+
+In your AppModule, register the API Key middleware inside the `MiddlewarehModule` by adding it to `providers` and including `use` in `exports`. Also, make sure you have imported and used the `MiddlewareModule` in your AppModule:
+
+```jsx
+import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { ApiKeyMiddleware } from './api-key.middleware';
+
+@Module({})
+export class MiddlewarehModule {
+  configure(consumer) {
+    consumer.apply(ApiKeyMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
+```
+
+## Step 5: Use the Middleware
+
+Now, you can use this middleware in various routes within your application. For example, if you have an `AppController`, you can apply it as follows:
+
+```jsx
+import { Controller, Get, UseMiddleware } from '@nestjs/common';
+import { ApiKeyMiddleware } from './middleware/api-key.middleware';
+
+@Controller('app')
+@UseMiddleware(ApiKeyMiddleware) // Apply the middleware at the controller level.
+export class AppController {
+  @Get()
+  getAppInfo() {
+    return 'Welcome to my API';
+  }
+}
+```
+
+## Step 6: Testing
+
+You can test the API Key middleware by sending HTTP requests with a header that includes the `api-key` containing a valid API key. Make sure to use an API key that matches the one you set in the environment variable.
+
+Following these steps, you have successfully added API Key middleware to your NestJS application, enhancing the security of your application by protecting the specified routes with API key verification.
+
+## Conclusion
+
+API Key middleware provides an effective way to secure your NestJS API by requiring a valid API key in each request. This ensures that only authorized users can access your protected routes, enhancing the security of your application.
