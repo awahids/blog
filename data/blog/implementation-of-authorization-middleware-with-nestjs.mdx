@@ -1,0 +1,116 @@
+---
+title: 'Implementation of Authorization Middleware with NestJS'
+date: '2023-11-23'
+tags: ['nestjs', 'Authorization', 'middleware']
+draft: false
+summary: 'This article guides the implementation of NestJS authorization middleware, ensuring secure access to protected routes. The TypeScript code validates Bearer tokens through an asynchronous function. The step-by-step instructions facilitate easy integration into a NestJS project, contributing to enhanced application security.'
+images: []
+---
+
+Middleware is an integral part of NestJS that allows you to manipulate requests before reaching the controller handler. One commonly used type of middleware is authorization middleware. In this article, we will discuss the implementation of authorization middleware using NestJS with the provided code.
+
+## Authorization Middleware Code
+
+```typescript
+// src/middleware/authorization.middleware.ts
+
+import { HttpException, HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+import axios, { AxiosError } from 'axios';
+import { errorResponse } from '../utils/helper';
+
+@Injectable()
+export class AuthorizationMiddleware implements NestMiddleware {
+    async use(req: Request, res: Response, next: NextFunction) {
+        const authorizationHeader = req.header('Authorization');
+
+        if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+            throw new HttpException("Unauthenticated.", HttpStatus.UNAUTHORIZED);
+        }
+
+        const token = authorizationHeader.split('Bearer ')[1];
+
+        try {
+            const isValid = await isTokenValid(token);
+
+            if (isValid) {
+                next();
+            } else {
+                throw new HttpException("Unauthenticated.", HttpStatus.UNAUTHORIZED);
+            }
+        } catch (error) {
+            return errorResponse(error.message, error.status);
+        }
+    }
+}
+
+async function isTokenValid(token: string): Promise<boolean> {
+    const domain = process.env.SERVICE_DOMAIN;
+    const config = {
+        headers: {
+            "Content-type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    };
+
+    try {
+        const response = await axios.get(`${domain}/api/user/authenticated`, config);
+        if (response.status >= 200 && response.status < 300) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const axiosError: AxiosError = error;
+            throw new HttpException(axiosError.response?.data || "Authentication failed", axiosError.response?.status || HttpStatus.UNAUTHORIZED);
+        } else {
+            throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}
+```
+
+## Steps to Use Authorization Middleware in NestJS
+
+### Step 1: Import Middleware
+
+Import the created middleware into the appropriate NestJS module.
+
+```typescript
+// src/app.module.ts
+
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { AuthorizationMiddleware } from './middleware/authorization.middleware';
+
+@Module({
+  // ... other module configurations
+})
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthorizationMiddleware)
+      .forRoutes('/*'); // Set the routes that will use the middleware
+  }
+}
+```
+
+### Step 2: Specify Routes Requiring Authorization
+
+In the example above, authorization middleware will be applied to all routes (`'/*'`). You can customize it according to your project needs.
+
+### Step 3: Run the NestJS Application
+
+After adding authorization middleware, run your NestJS application.
+
+```bash
+npm run start
+```
+
+Now, each incoming request will pass through the authorization middleware before reaching the controller handler. This middleware will check the authorization header and make decisions based on the token's validity.
+
+With the above steps, you have successfully implemented authorization middleware in NestJS using the provided code. Hopefully, this article helps you enhance the security of your NestJS application.
+
+# Conclusion
+
+In conclusion, implementing authorization middleware in NestJS is a crucial step to enhance the security of your application. The provided code demonstrates a middleware that checks the validity of a bearer token before allowing access to protected routes. By following the outlined steps, you can seamlessly integrate this middleware into your NestJS project, ensuring that only authenticated users have access to sensitive endpoints. This approach contributes to a more robust and secure NestJS application architecture.

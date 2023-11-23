@@ -64,7 +64,7 @@ const siteMetadata = {
       metadata: '1',
       // theme example: light, dark, dark_dimmed, dark_high_contrast
       // transparent_dark, preferred_color_scheme, custom
-      theme: 'light',
+      theme: 'transparent_dark',
       // theme when dark mode
       darkTheme: 'transparent_dark',
       // If the theme option above is set to 'custom`
@@ -74,6 +74,18 @@ const siteMetadata = {
       // This corresponds to the `data-lang="en"` in giscus's configurations
       lang: 'en',
     },
+    // utterancesConfig: {
+    //   // Visit the link below, and follow the steps in the 'configuration' section
+    //   // https://utteranc.es/
+    //   repo: process.env.NEXT_PUBLIC_UTTERANCES_REPO,
+    //   issueTerm: 'url', // supported options: pathname, url, title
+    //   label: 'Comment 💬', // label (optional): Comment 💬
+    //   // theme example: github-light, github-dark, preferred-color-scheme
+    //   // github-dark-orange, icy-dark, dark-blue, photon-dark, boxy-light
+    //   theme: 'dark-blue',
+    //   // theme when dark mode
+    //   darkTheme: 'dark-blue',
+    // },
   },
   search: {
     provider: 'kbar', // kbar or algolia
