@@ -1,0 +1,321 @@
+---
+title: Example basic CRUD Operations Using Golang, Gin Gonic, and GORM
+date: '2024-05-24'
+tags: ['golang', 'gin-gonic', 'gorm']
+draft: false
+summary: 'The article demonstrates how to create a basic CRUD (Create, Read, Update, Delete) application in Golang using Gin Gonic and GORM. It starts by outlining the project structure, including packages for handling HTTP requests, database configuration, domain logic, and router setup.'
+---
+
+Building web applications in Golang is both fun and efficient. Using powerful frameworks like Gin Gonic for the web layer and GORM for ORM (Object-Relational Mapping) makes it easier to create robust and maintainable applications. In this tutorial, we'll demonstrate how to implement basic CRUD operations in a book management system.
+
+## Project Structure
+
+We will organize our project using the following structure to maintain clean and manageable code:
+
+```
+belajar-go/
+│
+├── cmd/
+│     └── main.go
+├── configs/
+│     └── dbConfig.go
+├── internal/
+│     ├── delivery/
+│     │     ├── handlers/
+│     │     │     └── bookHandler/
+│     │     │          └── bookHandler.go
+│     │     ├── data/
+│     │     │     ├── request/
+│     │     │     │     └── bookReq/
+│     │     │     │          └── bookRequest.go
+│     │     │     └── response/
+│     │     │          ├── bookRes/
+│     │     │          │     └── bookResponse.go
+│     │     │          └── response.go
+│     └── router/
+│     │           ├── bookRouter/
+│     │           │          └── bookRouter.go
+│     │           └── router.go
+│     ├── domain/
+│     │     ├── models/
+│     │     │     └── books.go
+│     │     ├── repositories/
+│     │     │     ├── bookRepo/
+│     │     │     │      └── bookRepo.go
+│     └── services/
+│     │           ├── bookService/
+│     │           │      └── bookService.go
+│     └── infrastructure/
+│           └── database/
+│                  ├── database.go
+│                  └── migrations.go
+├── pkg/
+│     ├── utils/
+│     │     └── base.go
+│     └── helpers/
+│           └── errorPanic.go
+├── .env.example
+├── .gitignore
+├── go.mod
+└── go.sum
+```
+
+## Setting Up the Project
+
+1. **Initialize the project**:
+  ```bash
+  go mod init github.com/your-username/belajar-go
+  go get -u github.com/gin-gonic/gin
+  go get -u gorm.io/gorm
+  go get -u gorm.io/driver/postgres
+  ```
+
+2. **Database Configuration (`configs/dbConfig.go`)**:
+  ```go
+  package configs
+
+  import (
+      "gorm.io/driver/postgres"
+      "gorm.io/gorm"
+  )
+
+  func ConnectDB() (*gorm.DB, error) {
+      dsn := "host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
+      db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+      if err != nil {
+          return nil, err
+      }
+      return db, nil
+  }
+  ```
+
+3. **Models (`internal/domain/models/books.go`)**:
+  ```go
+  package models
+
+  import (
+    "github.com/awahids/belajar-go/common"
+    "gorm.io/gorm"
+  )
+
+  type Book struct {
+    common.Base
+    Title  string `json:"title" gorm:"type:varchar(100);not null"`
+    Author string `json:"author" gorm:"type:varchar(100);not null"`
+    Year   int    `json:"year" gorm:"type:int;not null"`
+    gorm.Model
+  }
+  ```
+
+4. **Repositories (`internal/domain/repositories/bookRepo.go`)**:
+  ```go
+  package repositories
+
+  import (
+      "github.com/your-username/belajar-go/internal/domain/models"
+      "gorm.io/gorm"
+  )
+
+  type BookRepository struct {
+      Db *gorm.DB
+  }
+
+  func NewBookRepository(Db *gorm.DB) *BookRepository {
+      return &BookRepository{Db: Db}
+  }
+
+  func (r *BookRepository) GetAll() ([]models.Book, error) {
+      var books []models.Book
+      result := r.Db.Find(&books)
+      return books, result.Error
+  }
+
+  func (r *BookRepository) GetByID(uuid string) (*models.Book, error) {
+      var book models.Book
+      result := r.Db.Where("uuid = ?", uuid).First(&book)
+      return &book, result.Error
+  }
+
+  func (r *BookRepository) Create(book *models.Book) error {
+      result := r.Db.Create(book)
+      return result.Error
+  }
+
+  func (r *BookRepository) Update(book *models.Book) error {
+      result := r.Db.Save(book)
+      return result.Error
+  }
+
+  func (r *BookRepository) Delete(uuid string) error {
+      result := r.Db.Where("uuid = ?", uuid).Delete(&models.Book{})
+      return result.Error
+  }
+  ```
+
+5. **Services (`internal/domain/services/bookService.go`)**:
+  ```go
+  package services
+
+  import (
+      "github.com/your-username/belajar-go/internal/domain/models"
+      "github.com/your-username/belajar-go/internal/domain/repositories"
+  )
+
+  type BookService struct {
+      repo *repositories.BookRepository
+  }
+
+  func NewBookService(repo *repositories.BookRepository) *BookService {
+      return &BookService{repo: repo}
+  }
+
+  func (s *BookService) GetAllBooks() ([]models.Book, error) {
+      return s.repo.GetAll()
+  }
+
+  func (s *BookService) GetBookByID(uuid string) (*models.Book, error) {
+      return s.repo.GetByID(uuid)
+  }
+
+  func (s *BookService) CreateBook(book *models.Book) error {
+      return s.repo.Create(book)
+  }
+
+  func (s *BookService) UpdateBook(book *models.Book) error {
+      return s.repo.Update(book)
+  }
+
+  func (s *BookService) DeleteBook(uuid string) error {
+      return s.repo.Delete(uuid)
+  }
+  ```
+
+6. **Handlers (`internal/delivery/handlers/bookHandler.go`)**:
+  ```go
+  package handlers
+
+  import (
+      "net/http"
+
+      "github.com/gin-gonic/gin"
+      "github.com/your-username/belajar-go/internal/domain/models"
+      "github.com/your-username/belajar-go/internal/domain/services"
+  )
+
+  type BookHandler struct {
+      bookService *services.BookService
+  }
+
+  func NewBookHandler(bookService *services.BookService) *BookHandler {
+      return &BookHandler{bookService: bookService}
+  }
+
+  func (h *BookHandler) GetBooks(c *gin.Context) {
+      books, err := h.bookService.GetAllBooks()
+      if err != nil {
+          c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+          return
+      }
+      c.JSON(http.StatusOK, books)
+  }
+
+  func (h *BookHandler) GetBook(c *gin.Context) {
+      uuid := c.Param("uuid")
+      book, err := h.bookService.GetBookByID(uuid)
+      if err != nil {
+          c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+          return
+      }
+      c.JSON(http.StatusOK, book)
+  }
+
+  func (h *BookHandler) CreateBook(c *gin.Context) {
+      var book models.Book
+      if err := c.ShouldBindJSON(&book); err != nil {
+          c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+          return
+      }
+      if err := h.bookService.CreateBook(&book); err != nil {
+          c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+          return
+      }
+      c.JSON(http.StatusCreated, book)
+  }
+
+  func (h *BookHandler) UpdateBook(c *gin.Context) {
+      uuid := c.Param("uuid")
+      var book models.Book
+      if err := c.ShouldBindJSON(&book); err != nil {
+          c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+          return
+      }
+      book.UUID = uuid
+      if err := h.bookService.UpdateBook(&book); err != nil {
+          c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+          return
+      }
+      c.JSON(http.StatusOK, book)
+  }
+
+  func (h *BookHandler) DeleteBook(c *gin.Context) {
+      uuid := c.Param("uuid")
+      if err := h.bookService.DeleteBook(uuid); err != nil {
+          c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+          return
+      }
+      c.JSON(http.StatusOK, gin.H{"message": "Book deleted"})
+  }
+  ```
+
+7. **Router (`internal/delivery/router/bookRouter.go`)**:
+  ```go
+  package router
+
+  import (
+      "github.com/gin-gonic/gin"
+      "github.com/your-username/belajar-go/internal/delivery/handlers"
+      "github.com/your-username/belajar-go/internal/domain/repositories"
+      "github.com/your-username/belajar-go/internal/domain/services"
+      "gorm.io/gorm"
+  )
+
+  func BookRouter(group *gin.RouterGroup, db *gorm.DB) {
+      bookRepository := repositories.NewBookRepository(db)
+      bookService := services.NewBookService(bookRepository)
+      bookHandler := handlers.NewBookHandler(bookService)
+
+      group.GET("/books", bookHandler.GetBooks)
+      group.GET("/books/:uuid", bookHandler.GetBook)
+      group.POST("/books", bookHandler.CreateBook)
+      group.PUT("/books/:uuid", bookHandler.UpdateBook)
+      group.DELETE("/books/:uuid", bookHandler.DeleteBook)
+  }
+  ```
+
+8. **Main (`cmd/main.go`)**:
+  ```go
+  package main
+
+  import (
+      "github.com/gin-gonic/gin"
+      "github.com/your-username/belajar-go/configs"
+      "github.com/your-username/belajar-go/internal/delivery/router"
+  )
+
+  func main() {
+      db, err := configs.ConnectDB()
+      if err != nil {
+          panic("Failed to connect to database!")
+      }
+
+      r := gin.Default()
+      v1 := r.Group("/api/v1")
+      router.BookRouter(v1, db)
+
+      r.Run(":8080")
+  }
+  ```
+
+## Conclusion
+
+By following this guide, you've learned how to create a basic CRUD application using Golang, Gin Gonic, and GORM. This structured approach helps maintain a clean and scalable codebase. Happy coding!
