@@ -1,8 +1,8 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: '~./Code8Bit',
+  title: '~./AWCode',
   author: 'AW',
-  headerTitle: '> ~/Code8Bit',
+  headerTitle: '> ~/AWCode',
   blogPath: '/blog',
   tagsPath: '/tags',
   description: 'Blogs and Tutorials',
