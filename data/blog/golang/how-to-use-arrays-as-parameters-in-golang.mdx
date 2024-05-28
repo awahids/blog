@@ -1,0 +1,170 @@
+---
+title: How to Use Arrays as Parameters in Golang?
+date: '2024-05-28'
+tags: ['golang', 'GO', 'gorm']
+draft: false
+summary: 'Arrays in Go are crucial for efficient data handling. Passing them as function parameters enhances data manipulation. While arrays have fixed sizes, slices offer dynamic lengths, improving flexibility. Utilizing slices simplifies tasks like database pagination. Understanding array and slice usage in Go is key for scalable, maintainable code.'
+images: ['https://static.blog.ruangdeveloper.com/2022/07/golang-function-parameter.png']
+authors: ['default']
+---
+![Thumbnail](https://static.blog.ruangdeveloper.com/2022/07/golang-function-parameter.png)
+
+## Table of Contents
+
+- [Declaring Arrays in Golang](#1-declaring-arrays-in-golang)
+- [Passing Arrays as Function Parameters](#2-passing-arrays-as-function-parameters)
+- [Using Slices as Function Parameters](#3-using-slices-as-function-parameters)
+- [Practical Example: Paginating Data](#4-practical-example-paginating-data)
+- [Conclusion](#conclusion)
+
+In Golang, arrays are a fundamental data structure that can be passed as parameters to functions. This article will explain how to use arrays as parameters in Go, including examples of passing arrays with fixed sizes and using slices for more flexibility.
+
+#### 1. Declaring Arrays in Golang
+
+Before passing arrays as parameters, let's review how to declare arrays in Go.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    // Declare an array with a fixed size of 5
+    var numbers [5]int
+    fmt.Println(numbers) // Output: [0 0 0 0 0]
+
+    // Declare an array with initial values
+    primes := [5]int{2, 3, 5, 7, 11}
+    fmt.Println(primes) // Output: [2 3 5 7 11]
+}
+```
+## Semilar Contents
+> - [Example basic CRUD Operations Using Golang, Gin Gonic, and GORM](https://blog.awahids.my.id/blog/golang/example-basic-crud-using-golang-gin-gonic-gorm)
+
+#### 2. Passing Arrays as Function Parameters
+
+To pass an array as a parameter to a function, you need to declare the function parameter as an array with a fixed length. Here’s an example:
+
+```go
+package main
+
+import "fmt"
+
+// Function that accepts an array with a fixed length of 5
+func printArray(arr [5]int) {
+    for i, value := range arr {
+        fmt.Printf("Element %d: %d\n", i, value)
+    }
+}
+
+func main() {
+    primes := [5]int{2, 3, 5, 7, 11}
+    printArray(primes)
+}
+```
+
+In the above example, the `printArray` function accepts a parameter of type array with a length of 5 elements.
+
+#### 3. Using Slices as Function Parameters
+
+In Go, it’s more common to use slices than arrays when passing a collection of data to a function. Slices are more flexible because they do not have a fixed length like arrays.
+
+```go
+package main
+
+import "fmt"
+
+// Function that accepts a slice
+func printSlice(slice []int) {
+    for i, value := range slice {
+        fmt.Printf("Element %d: %d\n", i, value)
+    }
+}
+
+func main() {
+    primes := []int{2, 3, 5, 7, 11}
+    printSlice(primes)
+}
+```
+
+In the example above, the `printSlice` function accepts a parameter of type slice. You can change the length of a slice without needing to redeclare it like an array.
+
+#### 4. Practical Example: Paginating Data
+
+Let’s apply this concept in a practical example. Suppose you want to create a function to paginate data from a database using GORM in Go. Here is a simple implementation:
+
+```go
+package main
+
+import (
+    "github.com/gin-gonic/gin"
+    "gorm.io/driver/sqlite"
+    "gorm.io/gorm"
+    "net/http"
+    "reflect"
+    "strconv"
+)
+
+type Product struct {
+    ID   int    `json:"id"`
+    Name string `json:"name"`
+}
+
+func main() {
+    r := gin.Default()
+
+    db, _ := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+    db.AutoMigrate(&Product{})
+
+    r.GET("/products", func(ctx *gin.Context) {
+        var responseDto []Product
+
+        page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+        perPage, _ := strconv.Atoi(ctx.DefaultQuery("per_page", "10"))
+
+        ResponseWithPaginate(db, &Product{}, &responseDto, ctx, page, perPage)
+    })
+
+    r.Run()
+}
+
+func ResponseWithPaginate(c *gorm.DB, data interface{}, responseDto interface{}, ctx *gin.Context, page int, perPage int) {
+    var totalItems int64
+
+    err := c.Model(data).Count(&totalItems).Error
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    result := c.Limit(perPage).Offset((page - 1) * perPage).Find(responseDto)
+    if result.Error != nil {
+        ctx.JSON(http.StatusNotFound, gin.H{"error": result.Error.Error()})
+        return
+    }
+
+    meta := NewMeta(ctx, totalItems, int64(reflect.ValueOf(responseDto).Elem().Len()))
+
+    SuccessResponse(ctx, responseDto, meta)
+}
+
+func NewMeta(ctx *gin.Context, totalItems, itemCount int64) map[string]interface{} {
+    return map[string]interface{}{
+        "total_items": totalItems,
+        "item_count":  itemCount,
+    }
+}
+
+func SuccessResponse(ctx *gin.Context, data interface{}, meta map[string]interface{}) {
+    ctx.JSON(http.StatusOK, gin.H{
+        "data": data,
+        "meta": meta,
+    })
+}
+```
+
+In the example above, the `ResponseWithPaginate` function accepts a slice as a parameter for `responseDto`. This slice is used to store the results of the query from the database.
+
+#### Conclusion
+
+Using arrays or slices as parameters in functions in Golang is straightforward and intuitive. Slices are often preferred due to their flexibility in size. By understanding these basics, you can easily manage and manipulate collections of data in your Go programs.
