@@ -1,0 +1,120 @@
+---
+title: Introduction Nodejs and Terminal
+date: '2024-08-05'
+tags: ['backend', 'node-js', 'terminal']
+draft: false
+summary: 'The blog template supports posts in nested sub-folders. This can be used to group posts of similar content e.g. a multi-part course. This post is itself an example of a nested route!'
+---
+
+Hello everyone! Welcome to this brief introduction to Node.js and using the terminal. In this post, we'll cover the basics of Node.js, some essential terminal commands, and see a practical example. Let's get started!
+
+## What is Node.js?
+
+Node.js is a runtime environment that allows us to run JavaScript on the server-side. It's built on Chrome's V8 JavaScript engine and designed for scalable network applications.
+
+## Key Features of Node.js
+
+- **Event-driven and Asynchronous:** Allows non-blocking operations.
+- **NPM (Node Package Manager):** A vast library of modules.
+- **Single-threaded:** Uses a single thread for I/O operations.
+
+## Basic Concepts of Node.js
+
+- **Modules:** Reusable blocks of code that can be included in applications with `require`.
+- **Events:** Many functionalities are centered around events.
+- **Non-blocking I/O:** Operations do not wait for responses before moving on.
+
+## Node.js Code Example
+
+Here’s a simple example of creating an HTTP server with Node.js:
+
+```javascript
+const http = require('http')
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'text/plain')
+  res.end('Hello, World!\n')
+})
+
+const port = 3000
+server.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`)
+})
+```
+
+This code creates a server that responds to every request with the message "Hello, World!" and listens for requests on port 3000.
+
+## Using the Terminal
+
+The terminal is a powerful tool for interacting with the operating system and running commands. Here are some basic terminal commands frequently used:
+
+- `pwd`: Print working directory.
+- `ls`: List directory contents.
+- `cd`: Change directory.
+- `mkdir`: Make a new directory.
+- `rm`: Remove a file or directory.
+
+## Installing Node.js
+
+To use Node.js in the terminal, first, you need to install it from [nodejs.org](https://nodejs.org/). Once installed, you can verify the installation by running the following commands in the terminal:
+
+```bash
+node -v
+npm -v
+```
+
+This will display the installed versions of Node.js and NPM.
+
+## Running a Simple Node.js File
+
+Let's try running a simple Node.js file. Create a file named `app.js` with the following content:
+
+```javascript
+function helloWorld() {
+  console.log('Hello, Haltev!')
+}
+
+helloWorld()
+```
+
+Navigate to the directory containing `app.js` and run this command in the terminal:
+
+```bash
+node app.js
+```
+
+You should see the output: "Hello, Node.js!"
+
+## Simple Case Example
+
+For a slightly more complex example, let's create a Node.js application that responds to HTTP requests with "Hello, World!".
+
+First, create a new file named `helloServer.js` with the following content:
+
+```javascript
+const http = require('http')
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'text/plain')
+  res.end('Hello, World!\n')
+})
+
+const port = 3000
+server.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`)
+})
+```
+
+Navigate to the directory containing `helloServer.js`, then run:
+
+```bash
+node helloServer.js
+```
+
+You should see a message in the terminal indicating that the server is running at `http://localhost:3000/`. Open your browser and access this address, and you will see "Hello, World!" displayed on the page.
+
+## Conclusion
+
+In this post, we covered the basics of Node.js and how to use the terminal. We also saw a practical example of creating an HTTP server that responds with "Hello, World!". This foundational knowledge will help you get started with Node.js and use the terminal effectively. Thank you for reading, and stay tuned for more Node.js topics!
